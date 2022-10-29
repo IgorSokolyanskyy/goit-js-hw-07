@@ -11,17 +11,14 @@ import { galleryItems } from "./gallery-items.js";
 // Добавь закрытие модального окна по нажатию клавиши Escape. Сделай так, чтобы прослушивание клавиатуры было только пока открыто модальное окно. У библиотеки basicLightbox есть метод для программного закрытия модального окна.
 
 const galleryContainer = document.querySelector(".gallery");
-const galleryMarkup = createGalleryItems(galleryItems);
+const galleryMarkup = getGalleryMarkup(galleryItems);
 
 galleryContainer.insertAdjacentHTML("beforeend", galleryMarkup);
+galleryContainer.addEventListener("click", onOpenModalImageClick)
 
-galleryContainer.addEventListener("click", onOpenModalImageClick);
-// galleryContainer.addEventListener("click", onEscKeyPress);
-let instance = basicLightbox.create(`
-<img src="${url}" width="800" height="600">`)
-console.log(instance)
+let instance = "";
 
-function createGalleryItems(galleryItems) {
+function getGalleryMarkup(galleryItems) {
   return galleryItems
     .map(({ preview, original, description }) => {
       return `
@@ -40,26 +37,26 @@ function createGalleryItems(galleryItems) {
 }
 
 function onOpenModalImageClick(e) {
-  window.addEventListener("keydown", onEscKeyPress);
-
+  window.addEventListener("keydown", onCloseEscKeyPress);
   e.preventDefault();
-  const url = e.target.dataset.source;
-  console.dir(url);
- 
+  
+  if (e.target.nodeName !== "IMG") {
+    return;
+  }
+  
+  onImegeClick(e);
+};
+
+function onImegeClick(e) {
+  instance = basicLightbox.create(`
+<img src="${e.target.dataset.source}">`);
   instance.show();
 }
 
-// function onModalCloseToEscape() {
-    
-//   }
-  
-
-function onEscKeyPress(e) {
-  console.log(e)
-  if (e.code === "Escape") {  
-    instance.close()
-    window.removeEventListener("keydown", onEscKeyPress)  
-   
+function onCloseEscKeyPress(e) {
+  console.log(e);
+  if (e.code === "Escape") {
+    instance.close();
+    window.removeEventListener("keydown", onCloseEscKeyPress);
   }
 }
-
