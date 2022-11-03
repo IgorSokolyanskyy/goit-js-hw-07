@@ -11,14 +11,14 @@ import { galleryItems } from "./gallery-items.js";
 // Добавь закрытие модального окна по нажатию клавиши Escape. Сделай так, чтобы прослушивание клавиатуры было только пока открыто модальное окно. У библиотеки basicLightbox есть метод для программного закрытия модального окна.
 
 const galleryContainer = document.querySelector(".gallery");
-const galleryMarkup = getGalleryMarkup(galleryItems);
+const galleryMarkup = createGalleryMarkup(galleryItems);
 
 galleryContainer.insertAdjacentHTML("beforeend", galleryMarkup);
 galleryContainer.addEventListener("click", onOpenModalImageClick)
 
-let instance = "";
+let instance ;
 
-function getGalleryMarkup(galleryItems) {
+function createGalleryMarkup(galleryItems) {
   return galleryItems
     .map(({ preview, original, description }) => {
       return `
@@ -48,15 +48,16 @@ function onOpenModalImageClick(e) {
 };
 
 function onImegeClick(e) {
+  const url = e.target.dataset.source
   instance = basicLightbox.create(`
-<img src="${e.target.dataset.source}">`);
+<img src="${url}">`);
   instance.show();
 }
 
 function onCloseEscKeyPress(e) {
-  console.log(e);
   if (e.code === "Escape") {
     instance.close();
     window.removeEventListener("keydown", onCloseEscKeyPress);
+    console.log(e.code);
   }
 }
